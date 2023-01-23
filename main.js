@@ -1,17 +1,23 @@
-song = "";
 leftWristX = 0;
 leftWristY = 0;
 rightWristX = 0;
 rightWristY = 0;
-scoreLeftWrist = 0;
-scoreRightWrist = 0;
+scoreleftWrist = 0;
+scorerightWrist = 0;
+status1 = "";
+status2 = "";
+
+song1 = "";
+song2 = "";
 
 function preload()
 {
-    song = loadSound("music.mp3");
+    song1 = loadSound("music.mp3");
+    song2 = loadSound("music2.mp3");
 }
 
-function setup() {
+function setup()
+{
     canvas = createCanvas(600, 500);
     canvas.center();
 
@@ -22,48 +28,54 @@ function setup() {
     poseNet.on('pose', gotPoses);
 }
 
-function modelLoaded(){
-    console.log('PoseNet Is Initialized');
+function modelLoaded()
+{
+    console.log('PoseNet is Initiallized');
 }
 
-function draw() {
+function draw()
+{
     image(video, 0, 0, 600, 500);
 
     fill("#FF0000");
-    stroke("#FF0000")
-
-    if(scoreLeftWrist > 0.2)
+    stroke("#FF0000");
+    status1 = song1.isPlaying();
+    status2 = song2.isPlaying();
+    
+    if(scoreleftWrist > 0.2)
     {
-    circle(leftWristX, leftWristY,20);
-    InNumberleftWristY = Number(leftWristY);
-    remove_decimals = floor(InNumberleftWristY);
-    volume = remove_decimals/500;
-    document.getElementById("volume").innerHTML = "Volume = " + volume;
-    song.setVolume(volume);
+        circle(leftWristX,leftWristY,20);
+        song1.stop();
+        if(status2 == false)
+        { 
+            song2.play(); 
+            document.getElementById("song").innerHTML = "Playing - Peter Pan Song" 
+        }
     }
-}
-
-function play()
-{
-    song.play();
-    song.setVolume(1);
-    song.rate(1);
+        if(scorerightWrist > 0.2)
+        {
+            circle(rightWristX,rightWristY,20);
+            song2.stop();
+            if(status1 == false)
+            { 
+                song1.play(); 
+                document.getElementById("song").innerHTML = "Playing - Harry Potor" 
+            }
+    }
 }
 
 function gotPoses(results)
 {
-  if(results.length > 0)
-  {
-    console.log(results);
-    scoreLeftWrist = results[0].pose.keypoints[9].score;
-    console.log("scoresLeftWrist = " + scoreLeftWrist);
+    if(results.length > 0)
+    {
+        console.log(results);
+        leftWristX = results[0].pose.leftWrist.x;
+        leftWristY = results[0].pose.leftWrist.y;
+        console.log("leftWristX = " + leftWristX +" leftWristY = "+ leftWristY);
+        scoreLeftWrist = results[0].pose.keypoints[9].score;
 
-    leftWristX = results[0].pose.leftWrist.x;
-    leftWristY = results[0].pose.leftWrist.y;
-    console.log("leftWristX = " + leftWristX +" leftWristY = "+ leftWristY);
-
-    rightWristX = results[0].pose.rightWrist.x;
-    rightWristY = results[0].pose.rightWrist.y;
-    console.log("rightWristX = " + rightWristX +" rightWristY = "+ rightWristY);
-  }
+        rightWristX = results[0].pose.rightWrist.x;
+        rightWristY = results[0].pose.rightWrist.y;
+        console.log("rightWristX = " + rightWristX +" rightWristY = "+ rightWristY);
+    }
 }
